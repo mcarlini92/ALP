@@ -1,0 +1,15 @@
+-------------------------------------------------------------------
+-- Seccion 5 - Programando en Lamda Calculo
+-- Ejercicio 6: Implementacion de la raiz cuadrada en lamda-calculo
+-------------------------------------------------------------------
+
+-- Resta en los naturales 
+
+def res = \n m . m pred n
+
+-- sqrt
+
+def sqrt' = Y (\f n i. is0 (res (mult i i) n) i (f n (pred i)))
+
+def sqrt = \x . sqrt' x x
+

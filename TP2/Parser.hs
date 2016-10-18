@@ -10,7 +10,7 @@ import Common
 import Untyped
 
 ----------------------------------------------
--- Seccón 2 - Representacón de Lambda Términos 
+-- Seccon 2 - Representacion de Lambda Terminos 
 -- Ejercicio 1
 ----------------------------------------------
 
@@ -19,7 +19,7 @@ num 0 = Abs "s" (Abs "z" (LVar "z"))
 num n = let (Abs _ (Abs _ w)) = num (n-1)
       in (Abs "s" (Abs "z" (App (LVar "s") w)))
 -------------------------------------------------
--- Parser de Lambda Cálculo (Gramatica Extendida) 
+-- Parser de Lambda Calculo (Gramatica Extendida) 
 -------------------------------------------------
 
 totParser :: Parser a -> Parser a
@@ -56,7 +56,7 @@ parseTermStmt = fmap (fmap conversion) (parseStmt parseLamTerm)
 parseLamTerm :: Parser LamTerm
 parseLamTerm =
    do bs <- many1 parseVarAbs
-      return (foldl1 App bs) --foldl1 garantiza la asociación izquierda de la aplicación
+      return (foldl1 App bs) --foldl1 garantiza la asociacion izquierda de la aplicacion
 
 parseVarAbs :: Parser LamTerm
 parseVarAbs = do ide <- identifier untyped

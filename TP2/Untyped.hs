@@ -6,10 +6,10 @@ import Data.List
 import Common
 
 --------------------------------------------------
--- Sección 2 - Representación de Términos Lambda 
--- Ejercicio 2: Conversión de Términos
+-- Seccion 2 - Representacion de Terminos Lambda 
+-- Ejercicio 2: Conversion de Terminos
 --------------------------------------------------
-conversion  :: LamTerm -> Term
+conversion :: LamTerm -> Term
 conversion lt = conversion' lt []
 
 conversion' :: LamTerm -> [(String, Int)] -> Term
@@ -32,24 +32,35 @@ lookUp c ((c',i):xs)
    | otherwise = lookUp c xs
 
 -------------------------------
--- Sección 3 - Evaluación
+-- Seccion 3 - Evaluacion
 -------------------------------
 
 vapp :: Value -> Value -> Value
-vapp = undefined
+vapp (VLam f) p     = f p 
+vapp (VNeutral p) q = VNeutral (NApp p q)
 
 eval :: [(Name,Value)] -> Term -> Value
-eval  nvs t = eval' t (nvs,[])
+eval nvs t = eval' t (nvs,[])
 
 eval' :: Term -> (NameEnv Value, [Value]) -> Value
-eval' (t1 :@: t2) xs                = vapp (eval' t1 xs) (eval' t2 xs)
-eval' (Lam t) (enviroments, bounds) = VLam (\x -> eval' t (enviroments, x:bounds))
-eval' (Free n) xs                   = c where [(_,c)] = [(p,q) | (p,q)<-xs, p==n]
-eval' (Bound  i)  xs                = (snd xs) !! i
+eval' (Bound  p) (_,zs) = zs !! p
+eval' (Free i) (ys,_)   = head $ [ q | (p,q)<-ys, p==i]
+eval' (p :@: q) xs      = vapp (eval' p xs) (eval' q xs)
+eval' (Lam p) (ys,zs)   = VLam (\x -> eval' p (ys,x:zs))
 
 --------------------------------
--- Sección 4 - Mostrando Valores
+-- Seccion 4 - Mostrando Valores
 --------------------------------
 
 quote  :: Value -> Term
-quote  =  undefined
+quote v = quote' v 0
+
+quote'  :: Value -> Int -> Term
+quote' (VLam f) i              = Lam (quote' (f (VNeutral (NFree (Quote i)))) (i+1))
+quote' (VNeutral (NFree v)) i  = case v of 
+                                    Global xs -> Free (Global xs)
+                                    Quote k   -> Bound (i-k-1)
+quote' (VNeutral (NApp n v)) i = (quote' (VNeutral n) i) :@: (quote' v i)
+
+
+
